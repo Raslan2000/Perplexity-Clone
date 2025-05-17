@@ -1,7 +1,8 @@
 "use client"
 import { UserDetailContext } from '@/context/UserDetailContext';
-import React from 'react'
-
+import { useUser } from '@clerk/nextjs';
+import React, { useState, useEffect } from 'react'
+import { supabase } from '@/services/supabase';
 function Provider({children}) {
 
   const {user} = useUser();
@@ -15,7 +16,7 @@ function Provider({children}) {
     let { data: Users, error } = await supabase
     .from('Users')
     .select('*')
-    .eq('email', user?.priaryEmailAddress.emailAddress)
+    .eq('email', user?.primaryEmailAddress.emailAddress)
     console.log(Users)
     if(Users.length ==0){
         const { data, error } = await supabase
@@ -23,7 +24,7 @@ function Provider({children}) {
         .insert([
             { 
                 name:user?.fullName,
-                email:user?.priaryEmailAddress.emailAddress
+                email:user?.primaryEmailAddress.emailAddress
             },
         ])
   .select()
@@ -34,7 +35,7 @@ function Provider({children}) {
   }
   return (
     <UserDetailContext.Provider value = {{userDetail, setuserDetail}}>
-        <div className='w-full'>Provider</div>
+        <div className='w-full'>{children}</div>
     </UserDetailContext.Provider>
   )
 }
